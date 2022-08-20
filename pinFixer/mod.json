@@ -11,10 +11,12 @@
         "authors": [
             {
                 "name": "Shrimp",
-                "icon": "https://avatars.githubusercontent.com/u/56453014?v=4"
+                "icon": "https://avatars.githubusercontent.com/u/56453014?v=4",
+                "website": "https://github.com/TcePrepK"
             }
         ],
         "library": true,
+        "source": "https://github.com/TcePrepK/Shapez-Mods",
         "readme": "<p>A small library mod to fix some issues related to pins not getting rendered correctly next to chunk borders.</p>"
     }
 }
