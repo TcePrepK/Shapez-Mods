@@ -1,0 +1,24 @@
+{
+    "entry": "main.js",
+    "id": "moreToolbars",
+    "version": "0.0.01",
+    "name": "More Toolbars",
+    "author": "Shrimp",
+    "description": "A library that allows you to add more toolbars.",
+    "website": "https://skimnerphi.net/mods/moreToolbars",
+    "settings": {},
+    "doesNotAffectSavegame": true,
+    "extra": {
+        "authors": [
+            {
+                "name": "Shrimp",
+                "icon": "https://avatars.githubusercontent.com/u/56453014?v=4",
+                "website": "https://github.com/TcePrepK"
+            }
+        ],
+        "library": true,
+        "source": "https://github.com/TcePrepK/Shapez-Mods",
+        "readme": "<p>With this library you can add your own custom toolbar and hide/show other toolbars easily!</p>"
+    },
+    "enabled": true
+}
