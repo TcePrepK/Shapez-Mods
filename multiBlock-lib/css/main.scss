@@ -1,0 +1,12 @@
+#ingame_HUD_MultiBlockManager {
+    position: absolute;
+    z-index: 100;
+    background: greenyellow;
+    transform: translate(-50%, -50%);
+
+    border-radius: 50%;
+
+    :hover {
+        background: #ff0;
+    }
+}

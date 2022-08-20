@@ -1,0 +1,28 @@
+[data-icon="building_icons/wireless_display_managers.png"] .icon {
+    background-image: url("../res/building_icons/wireless_display_managers.png") !important;
+}
+
+[data-icon="building_icons/signal_transport.png"] .icon {
+    background-image: url("../res/building_icons/signal_transport.png") !important;
+}
+
+[data-icon="building_icons/user_input.png"] .icon {
+    background-image: url("../res/building_icons/user_input.png") !important;
+}
+
+$buildings: (
+    wireless_display_managers,
+    wireless_display_managers-single_sender,
+    wireless_display_managers-quad_sender,
+    signal_transport,
+    signal_transport-mirrored,
+    signal_transport-static,
+    user_input,
+    user_input-mouse_input
+);
+
+@each $building in $buildings {
+    [data-icon="building_tutorials/#{$building}.png"] {
+        background-image: url("../building_tutorials/#{$building}.png") !important;
+    }
+}

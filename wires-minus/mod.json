@@ -1,0 +1,11 @@
+{
+    "entry": "main.js",
+    "id": "wires-minus",
+    "version": "1.0",
+    "name": "Wires-Minus",
+    "author": "Shrimp & SkimmerPhi",
+    "description": "Wireless stuff ",
+    "website": "",
+    "settings": {},
+    "disabled": true
+}

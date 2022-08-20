@@ -1,0 +1,23 @@
+[data-icon="building_icons/command_controller.png"] .icon {
+    background-image: url("../res/building_icons/command_controller.png") !important;
+}
+
+textarea {
+    white-space: nowrap;
+    overflow: auto;
+    width: 100%;
+    height: 640px;
+    // resize: none;
+    font-family: Consolas, monospace;
+    box-sizing: border-box;
+    margin: auto;
+
+    margin-top: -30px; 
+
+    padding: 30px;
+    background-color: #000;
+    color: #63de00;
+
+    border-radius: 20px;
+    line-height: 1.5rem;
+}

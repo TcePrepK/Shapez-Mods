@@ -1,0 +1,11 @@
+{
+    "entry": "main.js",
+    "id": "multiBlock-lib",
+    "version": "0.1.0",
+    "name": "MultiBlock Library",
+    "author": "Shrimp",
+    "description": "This library adds support for multi block structures.",
+    "website": "",
+    "settings": {},
+    "disabled": true
+}

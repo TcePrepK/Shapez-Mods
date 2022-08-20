@@ -1,0 +1,11 @@
+{
+    "entry": "main.js",
+    "id": "rotatable-camera",
+    "version": "1.0.0",
+    "name": "rotatableCamera",
+    "author": "Shrimp",
+    "description": "You can rotate camera!",
+    "website": "",
+    "settings": {},
+    "disabled": true
+}

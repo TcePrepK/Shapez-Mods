@@ -1,0 +1,11 @@
+{
+    "entry": "main.js",
+    "id": "cct",
+    "version": "1.0.0",
+    "name": "CCT",
+    "author": "Shrimp",
+    "description": "Command blocks in shapez.io",
+    "website": "",
+    "settings": {},
+    "disabled": true
+}

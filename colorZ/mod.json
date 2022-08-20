@@ -1,0 +1,11 @@
+{
+    "entry": "main.js",
+    "id": "colorZ",
+    "version": "0.1",
+    "name": "ColorZ",
+    "author": "Shrimp",
+    "description": "Lots of colors",
+    "website": "",
+    "settings": {},
+    "disabled": true
+}
