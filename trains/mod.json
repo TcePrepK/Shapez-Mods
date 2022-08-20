@@ -1,0 +1,11 @@
+{
+    "entry": "main.js",
+    "id": "trains",
+    "version": "0.1",
+    "name": "Trains",
+    "author": "Shrimp",
+    "description": "Trains",
+    "website": "",
+    "settings": {},
+    "disabled": true
+}

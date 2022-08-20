@@ -1,0 +1,11 @@
+{
+    "entry": "main.js",
+    "id": "z-mathModules",
+    "version": "0.1.0",
+    "name": "MathModules",
+    "author": "Shrimp",
+    "description": "This mod adds math buildings to the game.",
+    "website": "",
+    "settings": {},
+    "disabled": false
+}

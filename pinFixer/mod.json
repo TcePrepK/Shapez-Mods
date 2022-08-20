@@ -1,0 +1,20 @@
+{
+    "entry": "main.js",
+    "id": "pinFixer",
+    "version": "1.0",
+    "name": "PinFixer",
+    "author": "Shrimp",
+    "description": "A library to fix pins not getting rendered correctly next to chunk borders.",
+    "website": "https://skimnerphi.net/mods/pinFixer",
+    "settings": {},
+    "extra": {
+        "authors": [
+            {
+                "name": "Shrimp",
+                "icon": "https://avatars.githubusercontent.com/u/56453014?v=4"
+            }
+        ],
+        "library": true,
+        "readme": "<p>A small library mod to fix some issues related to pins not getting rendered correctly next to chunk borders.</p>"
+    }
+}

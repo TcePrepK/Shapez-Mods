@@ -1,0 +1,11 @@
+{
+    "entry": "main.js",
+    "id": "numbersLib",
+    "version": "1.1.0",
+    "name": "NumbersLib",
+    "author": "Shrimp",
+    "description": "A library that adds numbers in the game.",
+    "website": "",
+    "settings": {},
+    "disabled": false
+}
