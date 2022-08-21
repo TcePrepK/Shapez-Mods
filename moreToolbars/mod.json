@@ -1,7 +1,7 @@
 {
     "entry": "main.js",
     "id": "moreToolbars",
-    "version": "0.0.01",
+    "version": "1.0",
     "name": "More Toolbars",
     "author": "Shrimp",
     "description": "A library that allows you to add more toolbars.",
