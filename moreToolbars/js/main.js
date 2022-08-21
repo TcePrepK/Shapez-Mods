@@ -1,5 +1,4 @@
 import { globalConfig } from "shapez/core/config";
-import { gMetaBuildingRegistry } from "shapez/core/global_registries";
 import { HUDBaseToolbar } from "shapez/game/hud/parts/base_toolbar";
 import { HUDBuildingsToolbar } from "shapez/game/hud/parts/buildings_toolbar";
 import { HUDWiresToolbar } from "shapez/game/hud/parts/wires_toolbar";
@@ -21,8 +20,10 @@ shapez.ModInterface.prototype.registerToolbar = function (id, toolbar, isVisible
 
     this.modLoader.signals.hudInitializer.add(root => {
         // @ts-ignore
-        root.hud.parts[id] = new toolbar(root);
-        toolbarManager.registerToolbar(id, root.hud.parts[id]);
+        const hud = new toolbar(root);
+
+        root.hud.parts[id] = hud;
+        toolbarManager.registerToolbar(id, hud);
     });
 
     if (isVisible) {
@@ -35,6 +36,9 @@ shapez.ModInterface.prototype.registerToolbar = function (id, toolbar, isVisible
         }
     });
 };
+
+shapez.ModInterface.prototype.registerToolbar("regular", HUDBuildingsToolbar);
+shapez.ModInterface.prototype.registerToolbar("wires", HUDWiresToolbar);
 
 shapez.ModInterface.prototype.addNewBuildingToToolbar = function ({ toolbar, location, metaClass }) {
     const hudElementName = this["toolbarToHUD"][toolbar] || "HUDBuildingsToolbar";
@@ -63,57 +67,24 @@ class ModImpl extends Mod {
 
         this.modInterface.extendClass(HUDBaseToolbar, ({ $super, $old }) => ({
             initialize() {
+                this.coreCondition = this.visibilityCondition;
+                this.visibilityCondition = () => this.mtForceVisible && this.coreCondition();
+
                 this.mtForceEnable();
                 $old.initialize.call(this);
             },
 
-            update() {
-                const visible = this["mtForceVisible"] && this.visibilityCondition();
-                this.domAttach.update(visible);
-
-                if (!visible) {
-                    return;
-                }
-
-                let recomputeSecondaryToolbarVisibility = false;
-                for (const buildingId in this.buildingHandles) {
-                    const handle = this.buildingHandles[buildingId];
-                    const newStatus = !handle.puzzleLocked && handle.metaBuilding.getIsUnlocked(this.root);
-                    if (handle.unlocked !== newStatus) {
-                        handle.unlocked = newStatus;
-                        handle.element.classList.toggle("unlocked", newStatus);
-                        recomputeSecondaryToolbarVisibility = true;
-                    }
-                }
-
-                if (recomputeSecondaryToolbarVisibility && this.secondaryDomAttach) {
-                    let anyUnlocked = false;
-                    for (let i = 0; i < this.secondaryBuildings.length; ++i) {
-                        const metaClass = gMetaBuildingRegistry.findByClass(this.secondaryBuildings[i]);
-                        if (metaClass.getIsUnlocked(this.root)) {
-                            anyUnlocked = true;
-                            break;
-                        }
-                    }
-
-                    this.secondaryDomAttach.update(anyUnlocked);
-                }
-            },
-
             mtForceToggle() {
-                this["mtForceVisible"] = !this["mtForceVisible"];
+                this.mtForceVisible = !this.mtForceVisible;
             },
 
             mtForceEnable() {
-                this["mtForceVisible"] = true;
+                this.mtForceVisible = true;
             },
 
             mtForceDisable() {
-                this["mtForceVisible"] = false;
+                this.mtForceVisible = false;
             },
         }));
-
-        this.modInterface.registerToolbar("regular", HUDBuildingsToolbar);
-        this.modInterface.registerToolbar("wires", HUDWiresToolbar);
     }
 }
