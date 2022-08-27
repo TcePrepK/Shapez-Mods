@@ -1,11 +1,22 @@
 {
     "entry": "main.js",
     "id": "numbersLib",
-    "version": "1.1.0",
+    "version": "1.2.0",
     "name": "NumbersLib",
     "author": "Shrimp",
-    "description": "A library that adds numbers in the game.",
-    "website": "",
+    "description": "A library that adds numbers as an item.",
+    "website": "https://skimnerphi.net/mods/numbersLib",
     "settings": {},
-    "disabled": false
+    "extra": {
+        "authors": [
+            {
+                "name": "Shrimp",
+                "icon": "https://avatars.githubusercontent.com/u/56453014?v=4",
+                "website": "https://github.com/TcePrepK"
+            }
+        ],
+        "library": true,
+        "source": "https://github.com/TcePrepK/Shapez-Mods",
+        "readme": "<p>A library mod to add numbers as an item.</p>"
+    }
 }

@@ -1,20 +1,27 @@
 import { globalConfig } from "shapez/core/config";
 import { smoothenDpi } from "shapez/core/dpi_manager";
 import { DrawParameters } from "shapez/core/draw_parameters";
+import { STOP_PROPAGATION } from "shapez/core/signal";
 import { enumColors } from "shapez/game/colors";
+import { GameHUD } from "shapez/game/hud/hud";
 import { BooleanItem } from "shapez/game/items/boolean_item";
 import { COLOR_ITEM_SINGLETONS } from "shapez/game/items/color_item";
+import { KEYCODES } from "shapez/game/key_action_mapper";
+import { GameRoot } from "shapez/game/root";
 import { DisplaySystem } from "shapez/game/systems/display";
 import { Mod } from "shapez/mods/mod";
+import { patchCompare } from "./comparePatches";
 import { patchConstant } from "./constantPatches";
 import { NumberItem } from "./item";
 import { NumberManager } from "./numberManager";
+import { NumberReveal } from "./numberReveal";
+import { patchNumbers } from "./numbersPatches";
+
+const numberManager = new NumberManager();
+shapez.globalConfig["numberManager"] = numberManager;
 
 class ModImpl extends Mod {
     init() {
-        const numberManager = new NumberManager();
-        globalConfig["numberManager"] = numberManager;
-
         let font = new FontFace("Barlow", `url("res/fonts/GameFont.woff2")`);
 
         font.load().then(() => {
@@ -23,8 +30,28 @@ class ModImpl extends Mod {
         });
 
         patchConstant(this.modInterface);
+        patchCompare(this.modInterface);
+        patchNumbers(this.modInterface);
+
+        this.modInterface.registerHudElement("numberReveal", NumberReveal);
+        this.modInterface.runAfterMethod(GameHUD, "draw", function (parameters) {
+            this.parts["numberReveal"].draw(parameters);
+        });
 
         this.modInterface.registerItem(NumberItem, itemData => numberManager.getItem(itemData));
+
+        this.modInterface.registerIngameKeybinding({
+            id: "make_da_numbers_visible",
+            keyCode: KEYCODES.Alt,
+            translation: "Make all numbers opaque",
+            handler: root => {
+                return STOP_PROPAGATION;
+            },
+        });
+
+        this.modLoader.signals.gameStarted.add((/** @type {GameRoot} */ root) => {
+            globalConfig["opaqueNumbers"] = root.keyMapper.getBindingById("make_da_numbers_visible");
+        });
 
         this.modInterface.replaceMethod(DisplaySystem, "getDisplayItem", function ($original, [value]) {
             if (!value) {

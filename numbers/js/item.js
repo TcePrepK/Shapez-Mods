@@ -1,6 +1,4 @@
 import { globalConfig } from "shapez/core/config";
-import { smoothenDpi } from "shapez/core/dpi_manager";
-import { DrawParameters } from "shapez/core/draw_parameters";
 import { BaseItem } from "shapez/game/base_item";
 import { types } from "shapez/savegame/serialization";
 import { e, pi } from "./constantPatches";
@@ -56,19 +54,14 @@ export class NumberItem extends BaseItem {
     }
 
     /**
-     * @param {HTMLCanvasElement} canvas
      * @param {CanvasRenderingContext2D} context
-     * @param {number} w
-     * @param {number} h
-     * @param {number} dpi
+     * @param {number} x
+     * @param {number} y
      */
-    draw(canvas, context, w, h, dpi) {
-        context.font = "Bold " + h * 0.4 * dpi + "px Verdana";
+    draw(context, x, y, scale) {
+        context.font = "Bold " + 8 * scale + "px Verdana";
         context.textAlign = "center";
         context.textBaseline = "middle";
-
-        // 473737
-        // 74CFC6
 
         let value = String(Math.round(this.number * 10000) / 10000);
         if (this.number == pi) {
@@ -78,10 +71,10 @@ export class NumberItem extends BaseItem {
         }
 
         context.strokeStyle = "#4c0057";
-        context.lineWidth = 1.5 * dpi;
-        context.strokeText(value, (w * dpi) / 2, (h * dpi) / 2);
+        context.lineWidth = 1.5 * scale;
+        context.strokeText(value, x, y + 0.5);
         context.fillStyle = "#E95944";
-        context.fillText(value, (w * dpi) / 2, (h * dpi) / 2);
+        context.fillText(value, x, y + 0.5);
     }
 
     /**
@@ -90,31 +83,23 @@ export class NumberItem extends BaseItem {
      * @param {number} size
      */
     drawFullSizeOnCanvas(context, size) {
-        this.draw(null, context, size, size, 1);
+        this.draw(context, 0, 0);
     }
 
-    /**
-     * @param {number} x
-     * @param {number} y
-     * @param {DrawParameters} parameters
-     * @param {number=} diameter
-     */
-    drawItemCenteredImpl(x, y, parameters, diameter = 20) {
-        const dpi = smoothenDpi(globalConfig["shapesSharpness"] * parameters.zoomLevel);
-        if (!this.bufferGenerator) {
-            this.bufferGenerator = this.draw.bind(this);
+    drawItemCenteredClipped(x, y, parameters, diameter = 20) {
+        if (diameter == 20) {
+            parameters.context.globalAlpha = 0.4;
         }
 
-        const width = diameter * 0.4 * dpi * String(this.number).length;
-        const key = diameter + "/" + dpi + "/" + this.number;
-        const canvas = parameters.root.buffers.getForKey({
-            key: "numbers",
-            subKey: key,
-            w: width,
-            h: diameter,
-            dpi,
-            redrawMethod: this.bufferGenerator,
-        });
-        parameters.context.drawImage(canvas, x - width / 2, y - diameter / 2 + 0.5, width, diameter);
+        if (globalConfig["opaqueNumbers"].pressed) {
+            parameters.context.globalAlpha = 1;
+        }
+
+        this.draw(parameters.context, x, y, diameter / 20);
+        parameters.context.globalAlpha = 1;
+    }
+
+    drawItemCenteredImpl(x, y, parameters, diameter) {
+        this.drawItemCenteredClipped(x, y, parameters, diameter);
     }
 }
