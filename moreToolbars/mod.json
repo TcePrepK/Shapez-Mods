@@ -1,8 +1,8 @@
 {
     "entry": "main.js",
     "id": "moreToolbars",
-    "version": "1.0",
-    "name": "More Toolbars",
+    "version": "1.0.0",
+    "name": "MoreToolbars",
     "author": "Shrimp",
     "description": "A library that allows you to add more toolbars.",
     "website": "https://skimnerphi.net/mods/moreToolbars",
