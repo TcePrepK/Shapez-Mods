@@ -1,7 +1,7 @@
 {
     "entry": "main.js",
     "id": "pinFixer",
-    "version": "1.0",
+    "version": "1.0.0",
     "name": "PinFixer",
     "author": "Shrimp",
     "description": "A library to fix pins not getting rendered correctly next to chunk borders.",
