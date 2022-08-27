@@ -1,3 +1,4 @@
+import { globalConfig } from "shapez/core/config";
 import { createLogger } from "shapez/core/logging";
 import { Component } from "shapez/game/component";
 import { GameSystem } from "shapez/game/game_system";
@@ -7,17 +8,19 @@ import { HUDSandboxController } from "shapez/game/hud/parts/sandbox_controller";
 import { Mod } from "shapez/mods/mod";
 import { MODS } from "shapez/mods/modloader";
 import { ModMetaBuilding } from "shapez/mods/mod_meta_building";
+import { ArcTrigMathGates } from "./buildings/arctrigMath";
 import { BasicMathGates } from "./buildings/basicMath";
+import { BitMathGates } from "./buildings/bitMath";
+import { CompareMathGates } from "./buildings/compareMath";
 import { ComplexMathGates } from "./buildings/complexMath";
 import { RandomNumberGenerator } from "./buildings/randomNumberGenerator";
 import { SeedProvider } from "./buildings/seedProvider";
-import { BasicMathComponent } from "./components/basicMath";
-import { ComplexMathComponent } from "./components/complexMath";
+import { TrigMathGates } from "./buildings/trigMath";
+import { MathGatesComponent } from "./components/mathGates";
 import { RandomNumberGeneratorComponent } from "./components/randomNumberGenerator";
 import { SeedProviderComponent } from "./components/seedProvider";
 import { HUDEnableSandbox } from "./debug/enableSandbox";
-import { BasicMathSystem } from "./systems/basicMath";
-import { ComplexMathSystem } from "./systems/complexMath";
+import { MathGatesSystem } from "./systems/mathGates";
 import { RandomNumberGeneratorSystem } from "./systems/randomNumberGenerator";
 import { SeedProviderSystem } from "./systems/seedProvider";
 import { HUDMathToolbar } from "./toolbar/mathToolbar";
@@ -35,8 +38,7 @@ class ModImpl extends Mod {
     registerAllComponents() {
         this.modLog("Registering components");
 
-        this.registerComponent(BasicMathComponent);
-        this.registerComponent(ComplexMathComponent);
+        this.registerComponent(MathGatesComponent);
         this.registerComponent(SeedProviderComponent);
         this.registerComponent(RandomNumberGeneratorComponent);
     }
@@ -44,19 +46,27 @@ class ModImpl extends Mod {
     registerAllBuildings() {
         this.modLog("Registering buildings");
 
-        this.registerBuilding(BasicMathGates, ["mathToolbar"], ["primary"]);
-        this.registerBuilding(ComplexMathGates, ["mathToolbar"], ["primary"]);
-        this.registerBuilding(SeedProvider, ["wires", "mathToolbar"], ["secondary", "primary"]);
-        this.registerBuilding(RandomNumberGenerator, ["wires", "mathToolbar"], ["secondary", "primary"]);
+        this.registerBuilding(BasicMathGates, ["mathToolbar"], ["secondary"]);
+        this.registerBuilding(ComplexMathGates, ["mathToolbar"], ["secondary"]);
+        this.registerBuilding(TrigMathGates, ["mathToolbar"], ["secondary"]);
+        this.registerBuilding(ArcTrigMathGates, ["mathToolbar"], ["secondary"]);
+        this.registerBuilding(CompareMathGates, ["mathToolbar"], ["secondary"]);
+        this.registerBuilding(BitMathGates, ["mathToolbar"], ["secondary"]);
+        // this.registerBuilding(BasicMathGates, ["mathToolbar"], ["primary"]);
+        // this.registerBuilding(ComplexMathGates, ["mathToolbar"], ["primary"]);
+        // this.registerBuilding(TrigMathGates, ["mathToolbar"], ["primary"]);
+        // this.registerBuilding(ArcTrigMathGates, ["mathToolbar"], ["primary"]);
+        // this.registerBuilding(CompareMathGates, ["mathToolbar"], ["primary"]);
+        // this.registerBuilding(BitMathGates, ["mathToolbar"], ["primary"]);
 
-        RandomNumberGenerator.getAllVariantCombinations;
+        this.registerBuilding(SeedProvider, ["wires", "mathToolbar"], ["secondary", "secondary"]);
+        this.registerBuilding(RandomNumberGenerator, ["wires", "mathToolbar"], ["secondary", "secondary"]);
     }
 
     registerAllSystems() {
         this.modLog("Registering systems");
 
-        this.registerSystem(BasicMathSystem, "belt");
-        this.registerSystem(ComplexMathSystem, "belt");
+        this.registerSystem(MathGatesSystem, "belt");
 
         this.registerSystem(SeedProviderSystem, "belt");
         this.registerSystem(RandomNumberGeneratorSystem, "belt");
@@ -68,41 +78,41 @@ class ModImpl extends Mod {
         this.registerHUD(HUDToolbarChanger);
     }
 
-    registerAllKeybindings() {
-        // this.modInterface.registerIngameKeybinding({
-        //     id: "edit_channels_toggle",
-        //     keyCode: KEYCODES.F8,
-        //     translation: "Toggles channel editing board.",
-        //     /** @param {GameRoot} root */
-        //     handler: root => {
-        //         root.hud.parts["connectionBoard"].toggle();
-        //         return STOP_PROPAGATION;
-        //     },
-        // });
-    }
+    registerAllKeybindings() {}
 
-    runAllOverrides() {}
+    runAllOverrides() {
+        this.modLoader.signals.hudElementFinalized.add(element => {
+            if (element.constructor.name != "HUDWiresToolbar") {
+                return;
+            }
+
+            const targetBuildings = globalConfig["toolbarManager"].getToolbarByID("wires").primaryBuildings;
+            globalConfig["toolbarManager"]
+                .getToolbarByID("mathToolbar")
+                .primaryBuildings.push(...targetBuildings);
+        });
+    }
 
     setupDebugTools() {
         this.modLog("Setting up debug tools");
 
-        this.registerHUD(HUDEnableSandbox);
+        this.registerHUD(HUDEnableSandbox, true);
         this.modInterface.registerHudElement("sandboxController", HUDSandboxController);
     }
 
     init() {
-        if (!MODS.mods.find(x => x.metadata.id === "numbersLib")) {
+        if (!globalConfig["numberManager"] && !MODS.mods.find(x => x.metadata.id === "numbersLib")) {
             console.log(window.open("https://shapez.mod.io/number-library"));
             throw "MathGates mod requires Numbers Library mod to work! Please get that mod first.";
         }
 
-        if (!MODS.mods.find(x => x.metadata.id === "moreToolbars")) {
+        if (!globalConfig["toolbarManager"] && !MODS.mods.find(x => x.metadata.id === "moreToolbars")) {
             console.log(window.open("https://skimnerphi.net/mods/moreToolbars"));
             throw "MathGates mod requires More Toolbars mod to work! Please get that mod first.";
         }
 
         try {
-            this.setupDebugTools();
+            // this.setupDebugTools();
 
             this.runAllOverrides();
             this.registerAllToolbars();
@@ -144,6 +154,7 @@ class ModImpl extends Mod {
     /**
      * @param {typeof Component} component
      */
+    // @ts-ignore
     registerComponent(component) {
         const componentName = component.name;
         this[componentName] = component;

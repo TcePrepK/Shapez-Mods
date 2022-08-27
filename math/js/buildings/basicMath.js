@@ -4,7 +4,7 @@ import { Entity } from "shapez/game/entity";
 import { defaultBuildingVariant } from "shapez/game/meta_building";
 import { GameRoot } from "shapez/game/root";
 import { ModMetaBuilding } from "shapez/mods/mod_meta_building";
-import { BasicMathComponent, enumBasicMathGateVariants } from "../components/basicMath";
+import { basicMathVariants, MathGatesComponent } from "../components/mathGates";
 
 export class BasicMathGates extends ModMetaBuilding {
     constructor() {
@@ -13,7 +13,7 @@ export class BasicMathGates extends ModMetaBuilding {
 
     // @ts-ignore
     getSilhouetteColor() {
-        return "#7dcda2";
+        return "#83DFC2";
     }
 
     // @ts-ignore
@@ -27,7 +27,7 @@ export class BasicMathGates extends ModMetaBuilding {
     // @ts-ignore
     getAvailableVariants(root) {
         let arr = [];
-        for (const variant in enumBasicMathGateVariants) {
+        for (const variant in basicMathVariants) {
             arr.push(variant);
         }
         return arr;
@@ -38,42 +38,32 @@ export class BasicMathGates extends ModMetaBuilding {
             {
                 variant: defaultBuildingVariant,
                 name: "Addition",
-                description: "Adds two numbers together",
+                description: "Emits the sum of the two inputs.",
             },
             {
-                variant: enumBasicMathGateVariants.subtraction,
+                variant: basicMathVariants.subtraction,
                 name: "Subtraction",
-                description: "Subtracts two numbers",
+                description: "Emits the difference of the right input from the left input.",
             },
             {
-                variant: enumBasicMathGateVariants.multiplication,
+                variant: basicMathVariants.multiplication,
                 name: "Multiplication",
-                description: "Multiplies two numbers",
+                description: "Emits the product of the two inputs.",
             },
             {
-                variant: enumBasicMathGateVariants.division,
+                variant: basicMathVariants.division,
                 name: "Division",
-                description: "Divides two numbers",
+                description: "Emits the quotient of the left input divided by the right input.",
             },
             {
-                variant: enumBasicMathGateVariants.modulo,
+                variant: basicMathVariants.modulo,
                 name: "Modulo",
-                description: "Gets the remainder of two numbers",
+                description: "Emits the remainder of the left input divided by the right input.",
             },
             {
-                variant: enumBasicMathGateVariants.powerof,
-                name: "Power of",
-                description: "Raises one number to the power of another",
-            },
-            {
-                variant: enumBasicMathGateVariants.greater,
-                name: "Greater than",
-                description: "Checks if one number is greater than another",
-            },
-            {
-                variant: enumBasicMathGateVariants.less,
-                name: "Less than",
-                description: "Checks if one number is less than another",
+                variant: basicMathVariants.powerof,
+                name: "Exponent",
+                description: "Emits the result of raising the left input to the power of the right input.",
             },
         ];
     }
@@ -125,6 +115,8 @@ export class BasicMathGates extends ModMetaBuilding {
                 ],
             })
         );
+
+        entity.addComponent(new MathGatesComponent(basicMathVariants.addition));
     }
 
     /**
@@ -135,10 +127,6 @@ export class BasicMathGates extends ModMetaBuilding {
      */
     // @ts-ignore
     updateVariants(entity, rotationVariant, variant) {
-        if (entity.components["BasicMath"]) {
-            return;
-        }
-
-        entity.addComponent(new BasicMathComponent(enumBasicMathGateVariants[variant]));
+        entity.components["MathGates"].type = basicMathVariants[variant];
     }
 }

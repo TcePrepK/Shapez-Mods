@@ -17,6 +17,6 @@ export class RandomNumberGeneratorComponent extends Component {
         super();
 
         this.number = null;
-        this.pulse = true;
+        this.pulse = false;
     }
 }

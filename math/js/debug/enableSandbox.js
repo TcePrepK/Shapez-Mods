@@ -26,6 +26,9 @@ export class HUDEnableSandbox extends BaseHUDPart {
             rawBinding = KEYMAPPINGS.buildings[metaBuilding.getId()];
         }
 
+        const binding = this.root.keyMapper.getBinding(rawBinding);
+        binding.add(() => toolbar.selectBuildingForPlacement(metaBuilding));
+
         const itemContainer = makeDiv(rowPrimary, null, ["building"]);
         itemContainer.setAttribute("data-icon", "building_icons/" + metaBuilding.getId() + ".png");
         itemContainer.setAttribute("data-id", metaBuilding.getId());

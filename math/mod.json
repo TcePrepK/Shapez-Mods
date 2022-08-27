@@ -1,11 +1,32 @@
 {
     "entry": "main.js",
-    "id": "z-mathModules",
-    "version": "0.1.0",
+    "id": "mathModules",
+    "version": "1.0.0",
     "name": "MathModules",
-    "author": "Shrimp",
-    "description": "This mod adds math buildings to the game.",
-    "website": "",
+    "author": "Shrimp & SkimnerPhi",
+    "description": "This mod adds math operations as a wire building.",
+    "website": "https://skimnerphi.net/mods/mathModules",
     "settings": {},
-    "disabled": false
+    "extra": {
+        "require": {
+            "numbersLib": "^1.2.0",
+            "pinFixer": "^1.0.0",
+            "moreToolbars": "^1.0.0"
+        },
+        "icon": "data:image/png;base64,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",
+        "authors": [
+            {
+                "name": "Shrimp",
+                "icon": "https://avatars.githubusercontent.com/u/56453014?v=4",
+                "website": "https://github.com/TcePrepK"
+            },
+            {
+                "name": "SkimnerPhi",
+                "icon": "https://avatars.githubusercontent.com/u/69558934",
+                "website": "https://skimnerphi.net"
+            }
+        ],
+        "source": "https://github.com/TcePrepK/Shapez-Mods",
+        "readme": "<p>A mod that adds wire buildings that does math operations like multiplication an sine.</p>"
+    }
 }

@@ -4,7 +4,7 @@ import { Entity } from "shapez/game/entity";
 import { defaultBuildingVariant } from "shapez/game/meta_building";
 import { GameRoot } from "shapez/game/root";
 import { ModMetaBuilding } from "shapez/mods/mod_meta_building";
-import { ComplexMathComponent, enumComplexMathGateVariants } from "../components/complexMath";
+import { complexMathVariants, MathGatesComponent } from "../components/mathGates";
 
 export class ComplexMathGates extends ModMetaBuilding {
     constructor() {
@@ -13,7 +13,7 @@ export class ComplexMathGates extends ModMetaBuilding {
 
     // @ts-ignore
     getSilhouetteColor() {
-        return "#7dcda2";
+        return "#287233";
     }
 
     // @ts-ignore
@@ -27,7 +27,7 @@ export class ComplexMathGates extends ModMetaBuilding {
     // @ts-ignore
     getAvailableVariants(root) {
         let arr = [];
-        for (const variant in enumComplexMathGateVariants) {
+        for (const variant in complexMathVariants) {
             arr.push(variant);
         }
         return arr;
@@ -37,38 +37,38 @@ export class ComplexMathGates extends ModMetaBuilding {
         return [
             {
                 variant: defaultBuildingVariant,
-                name: "Sin",
-                description: "Takes the sine of the input",
+                name: "Logarithm",
+                description: "Emits the base-10 logarithm of the input.",
             },
             {
-                variant: enumComplexMathGateVariants.cos,
-                name: "Cos",
-                description: "Takes the cosine of the input",
+                variant: complexMathVariants.sqrt,
+                name: "Square Root",
+                description: "Emits the square root of the input.",
             },
             {
-                variant: enumComplexMathGateVariants.tan,
-                name: "Tan",
-                description: "Takes the tangent of the input",
+                variant: complexMathVariants.floor,
+                name: "Floor",
+                description: "Emits the nearest integer of the input, rounding down.",
             },
             {
-                variant: enumComplexMathGateVariants.cot,
-                name: "Cot",
-                description: "Takes the cotangent of the input",
+                variant: complexMathVariants.ceil,
+                name: "Ceil",
+                description: "Emits the nearest integer of the input, rounding up.",
             },
             {
-                variant: enumComplexMathGateVariants.csc,
-                name: "Csc",
-                description: "Takes the cosecant of the input",
+                variant: complexMathVariants.round,
+                name: "Round",
+                description: "Emits the nearest integer of the input.",
             },
             {
-                variant: enumComplexMathGateVariants.sec,
-                name: "Sec",
-                description: "Takes the secant of the input",
+                variant: complexMathVariants.sign,
+                name: "Sign",
+                description: "Emits the sign of the input as 1 or -1 (0 if input is 0).",
             },
             {
-                variant: enumComplexMathGateVariants.log,
-                name: "Log",
-                description: "Takes the log of the input",
+                variant: complexMathVariants.abs,
+                name: "Absolute Value",
+                description: "Emits the absolute value of the input.",
             },
         ];
     }
@@ -115,6 +115,8 @@ export class ComplexMathGates extends ModMetaBuilding {
                 ],
             })
         );
+
+        entity.addComponent(new MathGatesComponent(complexMathVariants.default));
     }
 
     /**
@@ -125,10 +127,6 @@ export class ComplexMathGates extends ModMetaBuilding {
      */
     // @ts-ignore
     updateVariants(entity, rotationVariant, variant) {
-        if (entity.components["ComplexMath"]) {
-            return;
-        }
-
-        entity.addComponent(new ComplexMathComponent(enumComplexMathGateVariants[variant]));
+        entity.components["MathGates"].type = complexMathVariants[variant];
     }
 }

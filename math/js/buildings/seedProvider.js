@@ -1,3 +1,4 @@
+import { generateMatrixRotations } from "shapez/core/utils";
 import { enumDirection, Vector } from "shapez/core/vector";
 import { enumPinSlotType, WiredPinsComponent } from "shapez/game/components/wired_pins";
 import { Entity } from "shapez/game/entity";
@@ -6,6 +7,8 @@ import { GameRoot } from "shapez/game/root";
 import { ModMetaBuilding } from "shapez/mods/mod_meta_building";
 import { SeedProviderComponent } from "../components/seedProvider";
 
+const overlayMatrix = generateMatrixRotations([0, 1, 0, 1, 1, 1, 1, 1, 1]);
+
 export class SeedProvider extends ModMetaBuilding {
     constructor() {
         super("seed_provider");
@@ -13,12 +16,17 @@ export class SeedProvider extends ModMetaBuilding {
 
     // @ts-ignore
     getSilhouetteColor() {
-        return "#7dcda2";
+        return "#89AC76";
     }
 
     // @ts-ignore
     getDimensions(variant) {
         return new Vector(1, 1);
+    }
+
+    // @ts-ignore
+    getSpecialOverlayRenderMatrix(rotation) {
+        return overlayMatrix[rotation];
     }
 
     /**
@@ -34,7 +42,7 @@ export class SeedProvider extends ModMetaBuilding {
             {
                 variant: defaultBuildingVariant,
                 name: "Seed Provider",
-                description: "Outputs the seed as a signal",
+                description: "Emits the map seed as a constant.",
             },
         ];
     }

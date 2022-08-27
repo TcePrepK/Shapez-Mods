@@ -1,17 +1,112 @@
-@import "mixins";
-@import "dynamic_ui.scss";
+@import "dynamic_ui";
 @import "variables";
-@import "mathToolbar";
+@import "mixins";
 @import "buildingsToolbarFix";
 
-[data-icon="building_icons/basic_math_gates.png"] .icon {
-    background-image: url("../res/building_icons/basic_math_gates.png") !important;
-}
+$elements: basic, complex, trig, arctrig, compare, bit;
 
-[data-icon="building_icons/complex_math_gates.png"] .icon {
-    background-image: url("../res/building_icons/complex_math_gates.png") !important;
+@each $elem in $elements {
+    [data-icon="building_icons/#{$elem}_math_gates.png"] .icon {
+        background-image: url("../res/building_icons/#{$elem}_math_gates.png") !important;
+    }
 }
 
 [data-icon="building_icons/toolbar_changer.png"] .icon {
     background-image: url("../res/building_icons/toolbar_changer.png") !important;
+}
+
+[data-icon="building_icons/random_number_generator.png"] .icon {
+    background-image: url("../res/building_icons/random_number_generator.png") !important;
+}
+
+[data-icon="building_icons/seed_provider.png"] .icon {
+    background-image: url("../res/building_icons/seed_provider.png") !important;
+}
+
+##{ingame_HUD_MathGatesToolbar} {
+    z-index: 200;
+}
+
+$buildings: (bit_math_gates-not, random_number_generator, seed_provider);
+
+$basics: (
+    basic_math_gates,
+    basic_math_gates-subtraction,
+    basic_math_gates-multiplication,
+    basic_math_gates-division,
+    basic_math_gates-powerof,
+    basic_math_gates-modulo
+);
+
+$complexes: (
+    complex_math_gates,
+    complex_math_gates-abs,
+    complex_math_gates-ceil,
+    complex_math_gates-floor,
+    complex_math_gates-round,
+    complex_math_gates-sign,
+    complex_math_gates-sqrt
+);
+
+$trigs: (
+    trig_math_gates,
+    trig_math_gates-cos,
+    trig_math_gates-cot,
+    trig_math_gates-csc,
+    trig_math_gates-sec,
+    trig_math_gates-tan,
+    arctrig_math_gates,
+    arctrig_math_gates-arccos,
+    arctrig_math_gates-arccot,
+    arctrig_math_gates-arccsc,
+    arctrig_math_gates-arcsec,
+    arctrig_math_gates-arctan
+);
+
+$compares: (compare_math_gates, compare_math_gates-lessThan);
+
+$logics: (bit_math_gates, bit_math_gates-or, bit_math_gates-xor);
+
+$shifts: (bit_math_gates-lshift, bit_math_gates-rshift, bit_math_gates-urshift);
+
+@each $name in $buildings {
+    [data-icon="building_tutorials/#{$name}.png"] {
+        background-image: url("../building_tutorials/#{$name}.png") !important;
+    }
+}
+
+@each $name in $basics {
+    [data-icon="building_tutorials/#{$name}.png"] {
+        background-image: url("../building_tutorials/basic_math_gates.png") !important;
+    }
+}
+
+@each $name in $complexes {
+    [data-icon="building_tutorials/#{$name}.png"] {
+        background-image: url("../building_tutorials/complex_math_gates.png") !important;
+    }
+}
+
+@each $name in $trigs {
+    [data-icon="building_tutorials/#{$name}.png"] {
+        background-image: url("../building_tutorials/trig_math_gates.png") !important;
+    }
+}
+
+@each $name in $compares {
+    [data-icon="building_tutorials/#{$name}.png"] {
+        background-image: url("../building_tutorials/compare_math_gates.png") !important;
+    }
+}
+
+@each $name in $logics {
+    [data-icon="building_tutorials/#{$name}.png"] {
+        background-image: url("../building_tutorials/bit_math_gates-logic.png") !important;
+    }
+}
+
+@each $name in $shifts {
+    [data-icon="building_tutorials/#{$name}.png"] {
+        background-image: url("../building_tutorials/bit_math_gates-shift.png") !important;
+    }
 }

@@ -1,3 +1,4 @@
+import { generateMatrixRotations } from "shapez/core/utils";
 import { enumDirection, Vector } from "shapez/core/vector";
 import { enumPinSlotType, WiredPinsComponent } from "shapez/game/components/wired_pins";
 import { Entity } from "shapez/game/entity";
@@ -6,6 +7,8 @@ import { GameRoot } from "shapez/game/root";
 import { ModMetaBuilding } from "shapez/mods/mod_meta_building";
 import { RandomNumberGeneratorComponent } from "../components/randomNumberGenerator";
 
+const overlayMatrix = generateMatrixRotations([0, 1, 0, 1, 1, 1, 1, 1, 1]);
+
 export class RandomNumberGenerator extends ModMetaBuilding {
     constructor() {
         super("random_number_generator");
@@ -13,12 +16,17 @@ export class RandomNumberGenerator extends ModMetaBuilding {
 
     // @ts-ignore
     getSilhouetteColor() {
-        return "#7dcda2";
+        return "#F75E25";
     }
 
     // @ts-ignore
     getDimensions(variant) {
         return new Vector(1, 1);
+    }
+
+    // @ts-ignore
+    getSpecialOverlayRenderMatrix(rotation) {
+        return overlayMatrix[rotation];
     }
 
     /**
@@ -35,7 +43,7 @@ export class RandomNumberGenerator extends ModMetaBuilding {
                 variant: defaultBuildingVariant,
                 name: "Random Number Generator",
                 description:
-                    "Outputs a random number between 0 and 1. In order to get a new number, send a pulse to the input",
+                    "Emits a new random number from [0, 1) when the input changes from falsy to truthy.",
             },
         ];
     }
