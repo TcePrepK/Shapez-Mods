@@ -23,7 +23,9 @@ import { HammerLinkComponent } from "../components/hammerLink";
  *   metadata: NetworkMetadata
  * }} NetworkTarget */
 
-// @ts-ignore
+shapez.NetworkElement ??= class {
+    constructor() {}
+};
 export class DynamicRemoteElement extends shapez.NetworkElement {
     constructor() {
         super(HammerLinkComponent);

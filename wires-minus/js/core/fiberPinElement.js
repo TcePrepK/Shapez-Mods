@@ -25,6 +25,9 @@ import { FiberEditor } from "./fiberEditor";
  * }} NetworkTarget */
 
 // @ts-ignore
+shapez.NetworkElement ??= class {
+    constructor() {}
+};
 export class FiberPinElement extends shapez.NetworkElement {
     constructor() {
         super(FiberPinsComponent);

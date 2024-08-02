@@ -29,5 +29,5 @@
         "source": "https://github.com/TcePrepK/Shapez-Mods",
         "readme": "<p>A mod that adds wireless buildings and a new connection type.</p>"
     },
-    "disabled": true
+    "disabled": false
 }

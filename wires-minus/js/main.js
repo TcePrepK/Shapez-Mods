@@ -38,34 +38,6 @@ import { HammerLinkSystem } from "./systems/hammerLink";
 import { KeyboardReaderSystem } from "./systems/keyboardReader";
 import { MouseReaderSystem } from "./systems/mouseReader";
 
-// ipcMain.handle("fs-test", async (event, job) => {
-//     const filenameSafe = job.filename;
-//     // const fname = path.join(storePath, filenameSafe);
-//     // switch (job.type) {
-//     //     case "read": {
-//     //         if (!fs.existsSync(fname)) {
-//     //             // Special FILE_NOT_FOUND error code
-//     //             return { error: "file_not_found" };
-//     //         }
-//     //         return await fs.promises.readFile(fname, "utf8");
-//     //     }
-//     //     case "write": {
-//     //         await writeFileSafe(fname, job.contents);
-//     //         return job.contents;
-//     //     }
-
-//     //     case "delete": {
-//     //         await fs.promises.unlink(fname);
-//     //         return;
-//     //     }
-
-//     //     default:
-//     //         throw new Error("Unknown fs job: " + job.type);
-//     // }
-//     console.log("Test");
-//     console.log(job);
-// });
-
 const modName = "Wires-Minus";
 class ModImpl extends Mod {
     registerAllComponents() {
@@ -319,6 +291,8 @@ class ModImpl extends Mod {
 
             missingMods.push(mod);
         }
+
+        console.log(missingMods);
 
         if (missingMods.length == 0) {
             const modList = MODS.mods.map(x => x.metadata.id);
