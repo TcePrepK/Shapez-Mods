@@ -1,5 +1,5 @@
-[data-icon="building_icons/wireless_display_managers.png"] .icon {
-    background-image: url("../res/building_icons/wireless_display_managers.png") !important;
+[data-icon="building_icons/advanced_display.png"] .icon {
+    background-image: url("../res/building_icons/advanced_display.png") !important;
 }
 
 [data-icon="building_icons/signal_transport.png"] .icon {
@@ -10,15 +10,17 @@
     background-image: url("../res/building_icons/user_input.png") !important;
 }
 
+[data-icon="building_icons/display_controller.png"] .icon {
+    background-image: url("../res/building_icons/display_controller.png") !important;
+}
+
 $buildings: (
-    wireless_display_managers,
-    wireless_display_managers-single_sender,
-    wireless_display_managers-quad_sender,
+    advanced_display,
+    display_controller,
     signal_transport,
-    signal_transport-mirrored,
-    signal_transport-static,
+    signal_transport-fiber_link,
     user_input,
-    user_input-mouse_input
+    user_input-mouse_reader
 );
 
 @each $building in $buildings {

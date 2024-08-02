@@ -1,95 +1,102 @@
 import { globalConfig } from "shapez/core/config";
-import { createLogger } from "shapez/core/logging";
 import { STOP_PROPAGATION } from "shapez/core/signal";
-import { Vector } from "shapez/core/vector";
-import { Component } from "shapez/game/component";
+import { enumDirectionToVector, Vector } from "shapez/core/vector";
 import { GameSystem } from "shapez/game/game_system";
 import { BaseHUDPart } from "shapez/game/hud/base_hud_part";
 import { GameHUD } from "shapez/game/hud/hud";
+import { HUDWireInfo } from "shapez/game/hud/parts/wire_info";
 import { HUDWiresOverlay } from "shapez/game/hud/parts/wires_overlay";
-import { KEYCODES } from "shapez/game/key_action_mapper";
+import { KEYCODES, KEYMAPPINGS } from "shapez/game/key_action_mapper";
+import { GameLogic } from "shapez/game/logic";
 import { MapChunkAggregate } from "shapez/game/map_chunk_aggregate";
 import { MapChunkView } from "shapez/game/map_chunk_view";
 import { GameRoot } from "shapez/game/root";
+import { enumHubGoalRewards } from "shapez/game/tutorial_goals";
 import { Mod } from "shapez/mods/mod";
 import { ModMetaBuilding } from "shapez/mods/mod_meta_building";
-import { MetaWirelessDisplayManagers } from "./buildings/display_managers";
-import { MetaSignalTransportBuildings } from "./buildings/signal_transport";
-import { MetaUserInputBuildings } from "./buildings/user_input_buildings";
-import { DynamicRemoteSignalComponent } from "./components/dynamic_remote_signal";
-import { KeyboardInputComponent } from "./components/keyboard_input";
-import { MouseInputComponent } from "./components/mouse_input";
-import { QuadSenderComponent } from "./components/quad_sender";
-import { SingleSenderComponent } from "./components/single_sender";
-import { StaticRemoteSignalComponent } from "./components/static_remote_signal";
-import { WirelessCodeComponent } from "./components/wireless_code";
-import { WirelessDisplayComponent } from "./components/wireless_display";
-import { HUDWirelessCode } from "./huds/wireless_code_hud";
+import { MOD_SIGNALS } from "shapez/mods/mod_signals";
+import { MODS } from "shapez/mods/modloader";
+import { MetaDisplayController } from "./buildings/displayController";
+import { MetaAdvancedDisplay } from "./buildings/displayManagers";
+import { MetaSignalTransportBuildings } from "./buildings/signalTransport";
+import { MetaUserInputBuildings } from "./buildings/userInput";
+import { DisplayControllerComponent } from "./components/displayController";
+import { FiberPinsComponent } from "./components/fiberPins";
+import { HammerLinkComponent } from "./components/hammerLink";
+import { KeyboardReaderComponent } from "./components/keyboardReader";
+import { MouseReaderComponent } from "./components/mouseReader";
+import { AdvancedDisplayComponent } from "./components/wirelessDisplay";
+import { DisplayManager } from "./core/displayManager";
+import { DynamicRemoteElement } from "./core/dynamicRemoteElement";
+import { FiberEditor } from "./core/fiberEditor";
+import { FiberPinElement } from "./core/fiberPinElement";
 import { removeThis } from "./remove/removeThisWhenPrSuggestionIsAccepted";
-import { DynamicRemoteSignalSystem } from "./systems/dynamic_remote_signal_system";
-import { KeyboardInputSystem } from "./systems/keyboard_input_system";
-import { MouseInputSystem } from "./systems/mouse_input_system";
-import { QuadSenderSystem } from "./systems/quad_sender";
-import { SingleSenderSystem } from "./systems/single_sender";
-import { StaticRemoteSignalSystem } from "./systems/static_remote_signal_system";
-import { WirelessCodeSystem } from "./systems/wireless_code_system";
-import { WirelessDisplaySystem } from "./systems/wireless_display";
-import { WirelessManager } from "./core/wirelessManager";
-import { FiberPinsComponent } from "./components/fiber_pins";
-import { FiberPinsSystem } from "./systems/fiber_pins_system";
-import { ConnectionBoard } from "./core/connection_board";
-import { HUDEnableSandbox } from "./debuggers/enableProducer";
-import { HUDSandboxController } from "shapez/game/hud/parts/sandbox_controller";
+import { AdvancedDisplaySystem } from "./systems/advancedDisplay";
+import { DisplayControllerSystem } from "./systems/displayController";
+import { FiberPinsSystem } from "./systems/fiberPins";
+import { HammerLinkSystem } from "./systems/hammerLink";
+import { KeyboardReaderSystem } from "./systems/keyboardReader";
+import { MouseReaderSystem } from "./systems/mouseReader";
 
-const modLogger = createLogger("shapez-minus");
+// ipcMain.handle("fs-test", async (event, job) => {
+//     const filenameSafe = job.filename;
+//     // const fname = path.join(storePath, filenameSafe);
+//     // switch (job.type) {
+//     //     case "read": {
+//     //         if (!fs.existsSync(fname)) {
+//     //             // Special FILE_NOT_FOUND error code
+//     //             return { error: "file_not_found" };
+//     //         }
+//     //         return await fs.promises.readFile(fname, "utf8");
+//     //     }
+//     //     case "write": {
+//     //         await writeFileSafe(fname, job.contents);
+//     //         return job.contents;
+//     //     }
 
+//     //     case "delete": {
+//     //         await fs.promises.unlink(fname);
+//     //         return;
+//     //     }
+
+//     //     default:
+//     //         throw new Error("Unknown fs job: " + job.type);
+//     // }
+//     console.log("Test");
+//     console.log(job);
+// });
+
+const modName = "Wires-Minus";
 class ModImpl extends Mod {
     registerAllComponents() {
-        this.modLog("Registering components");
-
-        this.registerComponent(WirelessCodeComponent);
         this.registerComponent(FiberPinsComponent);
 
-        this.registerComponent(WirelessDisplayComponent);
-        this.registerComponent(SingleSenderComponent);
-        this.registerComponent(QuadSenderComponent);
+        this.registerComponent(AdvancedDisplayComponent);
+        this.registerComponent(DisplayControllerComponent);
 
-        this.registerComponent(DynamicRemoteSignalComponent);
-        this.registerComponent(StaticRemoteSignalComponent);
+        this.registerComponent(HammerLinkComponent);
 
-        this.registerComponent(KeyboardInputComponent);
-        this.registerComponent(MouseInputComponent);
+        this.registerComponent(KeyboardReaderComponent);
+        this.registerComponent(MouseReaderComponent);
     }
 
     registerAllBuildings() {
-        this.modLog("Registering buildings");
+        this.registerBuilding(MetaAdvancedDisplay, ["regular", "wires"], ["secondary", "secondary"]);
+        this.registerBuilding(MetaDisplayController, ["wires"], ["secondary"]);
 
-        this.registerBuilding(MetaWirelessDisplayManagers, ["regular", "wires"], ["secondary", "secondary"]);
         this.registerBuilding(MetaSignalTransportBuildings, ["wires"], ["secondary"]);
         this.registerBuilding(MetaUserInputBuildings, ["regular", "wires"], ["secondary", "secondary"]);
     }
 
     registerAllSystems() {
-        this.modLog("Registering systems");
-
         this.registerSystem(FiberPinsSystem, "belt");
-        this.registerSystem(StaticRemoteSignalSystem, "logicGate");
 
-        this.registerSystem(WirelessCodeSystem, "belt");
-        this.registerSystem(MouseInputSystem, "belt");
-        this.registerSystem(KeyboardInputSystem, "belt", ["staticAfter"]);
+        this.registerSystem(MouseReaderSystem, "logicGate");
+        this.registerSystem(KeyboardReaderSystem, "logicGate", ["staticAfter"]);
 
-        this.registerSystem(DynamicRemoteSignalSystem, "belt");
-        this.registerSystem(SingleSenderSystem, "belt");
-        this.registerSystem(QuadSenderSystem, "belt");
-        this.registerSystem(WirelessDisplaySystem, "belt", ["staticAfter"]);
-    }
-
-    registerAllHUDs() {
-        this.modLog("Registering HUDs");
-
-        this.registerHUD(HUDWirelessCode, true);
-        this.registerHUD(ConnectionBoard, true);
+        this.registerSystem(HammerLinkSystem, "logicGate");
+        this.registerSystem(DisplayControllerSystem, "logicGate");
+        this.registerSystem(AdvancedDisplaySystem, "logicGate", ["staticAfter"]);
     }
 
     registerAllKeybindings() {
@@ -99,18 +106,7 @@ class ModImpl extends Mod {
             translation: "Toggles override option of Key Reader.",
             /** @param {GameRoot} root */
             handler: root => {
-                root.systemMgr.systems["keyboardInput"].toggleOverride();
-                return STOP_PROPAGATION;
-            },
-        });
-
-        this.modInterface.registerIngameKeybinding({
-            id: "edit_channels_toggle",
-            keyCode: KEYCODES.F8,
-            translation: "Toggles channel editing board.",
-            /** @param {GameRoot} root */
-            handler: root => {
-                root.hud.parts["connectionBoard"].toggle();
+                KeyboardReaderSystem.get(root).toggleOverride();
                 return STOP_PROPAGATION;
             },
         });
@@ -118,7 +114,9 @@ class ModImpl extends Mod {
 
     runAllOverrides() {
         this.modInterface.runAfterMethod(MapChunkView, "drawWiresForegroundLayer", function (parameters) {
-            this.root.systemMgr.systems["quadSender"].drawChunk(parameters, this);
+            AdvancedDisplaySystem.get(this.root).drawWiresChunk(parameters, this);
+            HammerLinkSystem.get(this.root).drawChunk(parameters, this);
+            FiberPinsSystem.get(this.root).drawChunk(parameters, this);
         });
 
         this.modInterface.runAfterMethod(MapChunkAggregate, "drawOverlay", function (parameters) {
@@ -130,95 +128,267 @@ class ModImpl extends Mod {
                         continue;
                     }
 
-                    this.root.systemMgr.systems["wirelessDisplay"].drawChunk(parameters, chunk);
+                    AdvancedDisplaySystem.get(this.root).drawChunk(parameters, chunk);
                 }
             }
         });
 
-        this.modInterface.runBeforeMethod(HUDWiresOverlay, "switchLayers", function () {
-            if (this.root.hud.parts["connectionBoard"].isActive) {
-                this.root.currentLayer = "regular";
+        this.modInterface.replaceMethod(HUDWireInfo, "drawOverlays", function ($original, [parameters]) {
+            if (FiberEditor.get(this.root).isActive) {
+                return;
             }
+
+            $original(parameters);
         });
+
+        this.modInterface.extendClass(GameLogic, ({ $old }) => ({
+            computeDisplayEdgeStatus({ tile, edge }) {
+                const offset = enumDirectionToVector[edge];
+                const targetTile = tile.add(offset);
+
+                const entities = this.root.map.getLayersContentsMultipleXY(targetTile.x, targetTile.y);
+                for (const entity of entities) {
+                    const displayComp = AdvancedDisplayComponent.get(entity);
+
+                    if (displayComp) {
+                        return true;
+                    }
+                }
+
+                return false;
+            },
+        }));
 
         removeThis(this.modInterface);
     }
 
-    setupConnectionBoard() {
-        this.modLog("Setting up connection board");
+    setupLayerSwitcher() {
+        shapez.layersToSwitch ??= [
+            {
+                id: "regular",
+                isUnlocked: () => true,
+            },
+            {
+                id: "wires",
+                isUnlocked: root => {
+                    if (!root.gameMode.getSupportsWires()) {
+                        return false;
+                    }
+                    return root.hubGoals.isRewardUnlocked(enumHubGoalRewards.reward_wires_painter_and_levers);
+                },
+            },
+        ];
+
+        const wiresIndex = shapez.layersToSwitch.findIndex(x => x.id === "wires");
+        shapez.layersToSwitch.splice(wiresIndex + 1, 0, {
+            id: "fiberEditor",
+            isUnlocked: root => {
+                return root.hubGoals.isRewardUnlocked(enumHubGoalRewards.reward_logic_gates);
+            },
+            enable: root => {
+                FiberEditor.get(root).toggleOn();
+            },
+            disable: root => {
+                FiberEditor.get(root).toggleOff();
+            },
+        });
+
+        this.modInterface.replaceMethod(HUDWiresOverlay, "switchLayers", function () {
+            // @ts-ignore
+            const reverse = this.root.keyMapper.getBinding(
+                KEYMAPPINGS.placement.rotateInverseModifier
+            ).pressed;
+
+            const currLayer = this["realCurrentLayer"] || shapez.layersToSwitch[0];
+            const currentIndex = shapez.layersToSwitch.findIndex(x => x == currLayer);
+            const currentLayer = shapez.layersToSwitch[currentIndex];
+
+            let index = currentIndex;
+            do {
+                index += reverse ? -1 : 1;
+                index = (index + shapez.layersToSwitch.length) % shapez.layersToSwitch.length;
+
+                const layer = shapez.layersToSwitch[index];
+                // @ts-ignore
+                if (layer.isUnlocked(this.root)) {
+                    // @ts-ignore
+                    currentLayer.disable?.(this.root);
+
+                    if (layer.enable) {
+                        // @ts-ignore
+                        layer.enable(this.root);
+                    } else {
+                        // @ts-ignore
+                        this.root.currentLayer = layer.id;
+                    }
+
+                    this["realCurrentLayer"] = layer;
+
+                    return;
+                }
+            } while (index !== currentIndex);
+        });
+    }
+
+    setupFiberEditor() {
+        MOD_SIGNALS.gameInitialized.add(root => {
+            new FiberEditor(root);
+        });
+
+        this.modInterface.runAfterMethod(GameHUD, "update", function (parameters) {
+            FiberEditor.get(this.root).update();
+        });
+
+        this.modInterface.runAfterMethod(GameHUD, "draw", function (parameters) {
+            FiberEditor.get(this.root).draw(parameters);
+        });
+
+        this.modInterface.runAfterMethod(GameHUD, "drawOverlays", function (parameters) {
+            FiberEditor.get(this.root).drawOverlays(parameters);
+        });
 
         this.signals.gameSerialized.add((root, data) => {
-            data.modExtraData.connections = root.hud.parts["connectionBoard"].serialize();
+            data.modExtraData.wm_fibers = FiberEditor.get(root).serialize();
         });
 
         this.signals.gameDeserialized.add((root, data) => {
-            if (data.modExtraData.connections) {
-                root.hud.parts["connectionBoard"].deserialize(data.modExtraData.connections);
+            if (data.modExtraData.wm_fibers) {
+                FiberEditor.get(root).deserialize(data.modExtraData.wm_fibers);
             }
         });
     }
 
-    setupDebugTools() {
-        this.modLog("Setting up debug tools");
+    setupDisplayManager() {
+        MOD_SIGNALS.gameInitialized.add(root => {
+            new DisplayManager(root);
+        });
+    }
 
-        this.registerHUD(HUDEnableSandbox);
-        this.modInterface.registerHudElement("sandboxController", HUDSandboxController);
+    setupElements() {
+        this.signals.appBooted.add(root => {
+            const NetworkBuddy = this.dependencies["network-buddy"];
+
+            // @ts-ignore
+            NetworkBuddy.registerNetworkElement(FiberPinElement);
+            // @ts-ignore
+            NetworkBuddy.registerNetworkElement(DynamicRemoteElement);
+        }, this);
     }
 
     init() {
         try {
-            globalConfig["wirelessManager"] = new WirelessManager();
+            this.requestMods(["numbers-lib", "network-buddy", "meta-patch"]);
+
+            this.setupLayerSwitcher();
+            this.setupFiberEditor();
+            this.setupElements();
+            this.setupDisplayManager();
 
             this.runAllOverrides();
             this.registerAllComponents();
             this.registerAllBuildings();
             this.registerAllSystems();
-            this.registerAllHUDs();
+            // this.registerAllHUDs();
             this.registerAllKeybindings();
-
-            this.setupConnectionBoard();
-
-            this.setupDebugTools();
         } catch (e) {
-            this.errorLog(e);
-            return;
+            console.error(e);
+        }
+    }
+
+    /**
+     * @param {Array<String>} mods
+     */
+    requestMods(mods) {
+        /** @type {{ [index: String]: Mod}} */
+        this.dependencies = {};
+        MODS.signals.appBooted.addToTop(() => {
+            MODS.mods.forEach(m => {
+                const id = m.metadata.id;
+                if (mods.includes(id)) {
+                    this.dependencies[id] = m;
+                }
+            });
+        });
+
+        const modLoadList = MODS.modLoadQueue.map(x => x.meta.id);
+        const missingMods = [];
+        for (const mod of mods) {
+            if (modLoadList.includes(mod)) {
+                continue;
+            }
+
+            missingMods.push(mod);
         }
 
-        this.modLog(" Mod loaded Successfully");
+        if (missingMods.length == 0) {
+            const modList = MODS.mods.map(x => x.metadata.id);
+
+            let dependsLoaded = true;
+            let highestIndex = -1;
+            for (const mod of mods) {
+                if (modList.includes(mod)) {
+                    continue;
+                }
+
+                dependsLoaded = false;
+                highestIndex = Math.max(highestIndex, modLoadList.indexOf(mod));
+            }
+
+            const thisModIDX = MODS.modLoadQueue.findIndex(x => x.modClass == ModImpl);
+            const thisMod = MODS.modLoadQueue[thisModIDX];
+            if (dependsLoaded) {
+                const index = MODS.mods.findIndex(x => x.metadata == thisMod.meta);
+                if (index != -1) {
+                    MODS.mods.splice(index, 1);
+                }
+
+                return;
+            }
+
+            MODS.modLoadQueue.splice(highestIndex + 1, 0, thisMod);
+
+            throw `Stopped loading ${modName} temporarily to let dependencies load first!`;
+        }
+
+        MODS.signals.stateEntered.add(gameState => {
+            if (gameState.getKey() !== "MainMenuState") return;
+            /** @type {import("shapez/game/hud/parts/modal_dialogs").HUDModalDialogs | null} */
+            const dialogs = gameState["dialogs"];
+            if (!dialogs) {
+                return;
+            }
+
+            const title = `Missing mods for ${modName} !`;
+            if (dialogs.dialogStack.some(x => x.title === title)) {
+                return;
+            }
+
+            const modsText =
+                `${modName} mod depends on some other mods and it looks like you are missing some of them. You can click to open them in browser. <br/>` +
+                `<h4>Missing Mods</h4>` +
+                missingMods
+                    .map(
+                        m =>
+                            `• <a href=` +
+                            `"https://skimnerphi.net/mods/${m.split(":").at(-1)}"` +
+                            `target="_blank" rel="follow">${m}</a>`
+                    )
+                    .join("<br/>");
+
+            dialogs.showWarning(title, modsText);
+        });
+
+        throw "Missing mods!";
     }
 
     /**
-     * @param {string} message
-     */
-    modLog(message) {
-        modLogger.log("📶 " + message + " 📶");
-    }
-
-    /**
-     * @param {string} message
-     */
-    announcementLog(message) {
-        modLogger.log("~ " + message);
-    }
-
-    /**
-     * @param {string} message
-     */
-    errorLog(message) {
-        modLogger.error("❗ Mod failed to load ❗");
-        modLogger.error(message);
-    }
-
-    /**
-     * @param {typeof Component} component
+     * @param {import("shapez/game/component").StaticComponent} component
      */
     registerComponent(component) {
         const componentName = component.name;
         this[componentName] = component;
 
         this.modInterface.registerComponent(component);
-
-        this.announcementLog(`Registered component ${componentName}`);
     }
 
     /**
@@ -245,8 +415,6 @@ class ModImpl extends Mod {
                 location: selectedLocation,
             });
         }
-
-        this.announcementLog(`Registered building ${buildingName}`);
     }
 
     /**
@@ -258,7 +426,11 @@ class ModImpl extends Mod {
         const systemName = system.name;
         this[systemName] = system;
 
-        const id = systemName.charAt(0).toLowerCase() + systemName.substring(1, systemName.length - 6);
+        // @ts-ignore
+        const id = system.getId
+            ? // @ts-ignore
+              system.getId()
+            : systemName.charAt(0).toLowerCase() + systemName.substring(1, systemName.length - 6);
 
         this.modInterface.registerGameSystem({
             id,
@@ -266,15 +438,12 @@ class ModImpl extends Mod {
             before,
             drawHooks,
         });
-
-        this.announcementLog(`Registered system ${systemName}`);
     }
 
     /**
      * @param {new (...args) => BaseHUDPart} hud
-     * @param {boolean=} draw
      */
-    registerHUD(hud, draw = false) {
+    registerHUD(hud) {
         const hudName = hud.name;
         this[hudName] = hud;
 
@@ -283,14 +452,12 @@ class ModImpl extends Mod {
 
         this.modInterface.registerHudElement(id, hud);
 
-        if (!draw) {
+        if (!hud.prototype["draw"]) {
             return;
         }
 
         this.modInterface.runAfterMethod(GameHUD, "draw", function (parameters) {
             this.parts[id].draw(parameters);
         });
-
-        this.announcementLog(`Registered HUD ${hudName} (${id})`);
     }
 }

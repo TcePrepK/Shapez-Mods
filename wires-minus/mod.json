@@ -1,11 +1,33 @@
 {
     "entry": "main.js",
     "id": "wires-minus",
-    "version": "1.0",
+    "version": "2.0.0",
     "name": "Wires-Minus",
     "author": "Shrimp & SkimmerPhi",
-    "description": "Wireless stuff ",
-    "website": "",
+    "description": "Wireless stuff, fibers etc. It all just works somehow...",
+    "website": "https://skimnerphi.net/mods/wires-minus",
     "settings": {},
+    "extra": {
+        "require": {
+            "numbersLib": "^1.2.0",
+            "network-buddy": "^1.0.1",
+            "meta-patch": "^1.0.1"
+        },
+        "icon": "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",
+        "authors": [
+            {
+                "name": "Shrimp",
+                "icon": "https://avatars.githubusercontent.com/u/56453014?v=4",
+                "website": "https://github.com/TcePrepK"
+            },
+            {
+                "name": "SkimnerPhi",
+                "icon": "https://avatars.githubusercontent.com/u/69558934",
+                "website": "https://skimnerphi.net"
+            }
+        ],
+        "source": "https://github.com/TcePrepK/Shapez-Mods",
+        "readme": "<p>A mod that adds wireless buildings and a new connection type.</p>"
+    },
     "disabled": true
 }
